@@ -1,3 +1,9 @@
+/*
+*	@filename: main.c
+*	@authors: Tyler Steiner and Michael Esry
+*	@date: 2015.02.23
+*	Purpose: Program Main for Quite a Shell (quash) Project.
+*/
 #include <stdio.h>
 #include <string.h>
 
