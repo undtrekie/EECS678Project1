@@ -34,7 +34,11 @@ int main(){
 	}else if(strcmp(input, cd)==0){
 
 	}else if(strcmp(input, jobs)==0){
-
+	
+	}else if(strcmp(input, quit)==0){
+		printf("Good-Bye.\n");
+	}else if(strcmp(input, exit)==0){	
+		printf("Good-Bye.\n");
 	}else{
 	    printf("%s: command not found.\n", input);
 	}
