@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define MAX_LENGTH 80
 
@@ -16,7 +17,7 @@ int main(int argc, char** argv){
     char* home=argv[1];
     char wDirectory[MAX_LENGTH];
     char* path=argv[2];
-    char exit[]="exit";
+    char ex[]="exit";
     char quit[]="quit";
     char help[]="help";
     char set[]="set";
@@ -26,17 +27,17 @@ int main(int argc, char** argv){
     //Set Working Directory
 
     if(argc!=3){
-	printf("\n%i: Incorrect # of parameters\n\n",argc);
-	printf("usage: ./project <home directory> <path>\n\n");
-	return 1;
+		printf("\n%i: Incorrect # of parameters\n\n",argc);
+		printf("usage: ./project <home directory> <path>\n\n");
+		return 1;
     }
     strcpy(wDirectory, home);
     
 
-    while(strcmp(input, exit)!=0 && strcmp(input, quit)!=0){
-	printf("quash:%s > ", wDirectory);
-	//fgets(input, MAX_LENGTH, stdin);
-	//strtok(input, "\n");
+    while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
+		printf("quash:%s > ", wDirectory);
+		//fgets(input, MAX_LENGTH, stdin);
+		//strtok(input, "\n");
       	scanf("%s", input);
 
 	if(strcmp(input, help)==0){
@@ -47,6 +48,9 @@ int main(int argc, char** argv){
 	    printf("\tset\n");
 	    printf("\tcd\n");
 	    printf("\tjobs\n");
+	    printf("\tls\n");
+	    printf("\trm\n");
+	    printf("\t./ - for executing programs can be run with or without arguments\n");
 	}else if(strncmp(input, set, 3)==0){
 	    
 	}else if(strncmp(input, cd, 2)==0){
@@ -58,19 +62,34 @@ int main(int argc, char** argv){
 		for(i=0; i<strlen(buff)-1; i++){
 		    wDirectory[i]=buff[i+1];
 		}
-		wDirectory[i]='\0';
+			wDirectory[i]='\0';
 	    }else{
-		strcpy(wDirectory, home);
+			strcpy(wDirectory, home);
 	    }
+	    system(input);
 	}else if(strcmp(input, jobs)==0){
 	
 	}else if(strcmp(input, quit)==0){
 		printf("Good-Bye.\n");
-	}else if(strcmp(input, exit)==0){	
+	}else if(strcmp(input, ex)==0){	
 		printf("Good-Bye.\n");
+	}else if(strncmp(input, "./", 1)==0){
+		system(input);
+	}else if(strcmp(input, "ls")==0){
+		strcat(input," ");
+		strcat(input,home);
+		system(input);	
+	}else if(strncmp(input, "rm", 2)==0){
+		strcat(input, " ");
+		strcat(input,home);
+		char file[MAX_LENGTH];
+		printf("Enter Filename: ");
+		scanf("%s",file);
+		strcat(input,file);
+		system(input);
 	}else{
 	    printf("%s: command not found.\n", input);
 	}
-    }
+	}
     return 0;
 }
