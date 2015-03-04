@@ -25,7 +25,8 @@ int main(int argc, char** argv){
     char cd[]="cd";
     char jobs[]="jobs";
     int num=0;
-
+    int i;           //loop iterator;
+    char* split;
     if(argc!=3){
 		printf("\n%i: Incorrect # of parameters\n\n",argc);
 		printf("usage: ./project <home directory> <path>\n\n");
@@ -39,14 +40,18 @@ int main(int argc, char** argv){
 	strcpy(path[0], argv[2]);
 	numPaths++;
     }else{
-	
+	split=strtok(argv[2], ":");
+	while(split != NULL){
+	    strcpy(path[numPaths],split);
+	    numPaths++;
+	    split=strtok(NULL, ":");
+	}
     }
     numPaths++;
+    
 
     while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
-		printf("quash:%s > ", wDirectory);
-		//fgets(input, MAX_LENGTH, stdin);
-		//strtok(input, "\n");
+	printf("quash:%s > ", wDirectory);
       	scanf("%s", input);
 
 	if(strcmp(input, help)==0){
@@ -61,13 +66,30 @@ int main(int argc, char** argv){
 	    printf("\trm\n");
 	    printf("\t./ - for executing programs can be run with or without arguments\n");
 	}else if(strncmp(input, set, 3)==0){
-	    
+	    char buff[MAX_LENGTH];
+	    fgets(buff, 80, stdin);
+	    if(strlen(buff)>1){
+		char* setin;
+		strtok(buff, "\n");
+		setin=strtok(buff, " =");
+		if(strcmp(setin,"HOME")==0){
+		    setin=strtok(NULL,"\n");
+		    strcpy(home, setin);
+		}else if(strcmp(setin,"PATH")==0){
+		    numPaths=0;
+		    setin=strtok(NULL,":");
+		    while(setin !=NULL){
+			strcpy(path[numPaths],setin);
+			numPaths++;
+			setin=strtok(NULL, ":");
+		    }
+		}
+	    }
 	}else if(strncmp(input, cd, 2)==0){
 	    char buff[MAX_LENGTH];
 	    fgets(buff, 80, stdin);
 	    if(strlen(buff)>1){
 		strtok(buff, "\n");
-		int i;
 		for(i=0; i<strlen(buff)-1; i++){
 		    wDirectory[i]=buff[i+1];
 		}
@@ -101,6 +123,6 @@ int main(int argc, char** argv){
 	}else{
 	    printf("%s: command not found.\n", input);
 	}
-	}
+    }
     return 0;
 }
