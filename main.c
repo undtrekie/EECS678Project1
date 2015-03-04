@@ -14,6 +14,7 @@
 
 int main(int argc, char** argv){
     char input[MAX_LENGTH];
+    char argus[MAX_LENGTH];
     char* home=argv[1];
     char wDirectory[MAX_LENGTH];
     char* path=argv[2];
@@ -38,7 +39,7 @@ int main(int argc, char** argv){
 		printf("quash:%s > ", wDirectory);
 		//fgets(input, MAX_LENGTH, stdin);
 		//strtok(input, "\n");
-      	scanf("%s", input);
+      	scanf("%s",input);
 
 	if(strcmp(input, help)==0){
 	    printf("commands:\n");
@@ -74,7 +75,14 @@ int main(int argc, char** argv){
 	}else if(strcmp(input, ex)==0){	
 		printf("Good-Bye.\n");
 	}else if(strncmp(input, "./", 1)==0){
-		system(input);
+		char arg[MAX_LENGTH];
+		fgets(arg,80,stdin);
+		printf("arg: %s",arg);
+		char temp[MAX_LENGTH];
+		strcpy(temp,home);
+		strcat(temp,input);
+		printf("command: %s \n",temp);
+		system(temp);
 	}else if(strcmp(input, "ls")==0){
 		strcat(input," ");
 		strcat(input,home);
