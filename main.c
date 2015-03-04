@@ -52,7 +52,7 @@ int main(int argc, char** argv){
     
 
     while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
-		printf("quash:%s > ", wDirectory);
+	printf("quash:%s > ", wDirectory);
       	fgets(input,80,stdin);
 
 	if(strcmp(input, help)==0){
@@ -67,36 +67,45 @@ int main(int argc, char** argv){
 	    printf("\trm\n");
 	    printf("\t./ - for executing programs can be run with or without arguments\n");
 	}else if(strncmp(input, set, 3)==0){
-	    char buff[MAX_LENGTH];
-	    fgets(buff, 80, stdin);
-	    if(strlen(buff)>1){
-		char* setin;
-		strtok(buff, "\n");
-		setin=strtok(buff, " =");
-		if(strcmp(setin,"HOME")==0){
-		    setin=strtok(NULL,"\n");
-		    strcpy(home, setin);
-		}else if(strcmp(setin,"PATH")==0){
-		    numPaths=0;
-		    setin=strtok(NULL,":");
-		    while(setin !=NULL){
-			strcpy(path[numPaths],setin);
-			numPaths++;
-			setin=strtok(NULL, ":");
-		    }
+	    char* setptr;
+	    strtok(input, "\n");
+	    setptr=strtok(input," ");
+	    setptr=strtok(NULL,"=");
+	    if(strcmp(setptr, "HOME")==0){
+		setptr=strtok(NULL,"\n");
+		strcpy(home, setptr);
+	    }else if(strcmp(setptr, "PATH")==0){
+		numPaths=0;
+		setptr=strtok(NULL,":");
+		while(setptr!=NULL){
+		    strcpy(path[numPaths],setptr);
+		    numPaths++;
+		    setptr=strtok(NULL,":");
+		}
+		printf("%s", home);
+		for(i=0; i<numPaths; i++){
+		    printf("%s\n",path[i]);
 		}
 	    }
 	}else if(strncmp(input, cd, 2)==0){
-	    char buff[MAX_LENGTH];
-	    fgets(buff, 80, stdin);
-	    if(strlen(buff)>1){
-		strtok(buff, "\n");
-		for(i=0; i<strlen(buff)-1; i++){
-		    wDirectory[i]=buff[i+1];
-		}
-			wDirectory[i]='\0';
+	    char* cdtmp;
+	    strtok(input, "\n");
+	    cdtmp=strtok(input," ");
+	    cdtmp=strtok(NULL, " ");
+	    if(cdtmp==NULL){
+		strcpy(wDirectory, home);
+	    }else if(strcmp(cdtmp,"..")==0){
+		
 	    }else{
-			strcpy(wDirectory, home);
+		if(strncmp(cdtmp,"/", 1)==0){
+		    strcpy(wDirectory, cdtmp);
+		}else{
+		    char cdfull[MAX_LENGTH];
+		    strcpy(cdfull, wDirectory);
+		    strcat(cdfull,"/");
+		    strcat(cdfull,cdtmp);
+		    strcpy(wDirectory, cdfull);
+		}
 	    }
 	    system(input);
 	}else if(strncmp(input,jobs,4)==0){
@@ -117,7 +126,7 @@ int main(int argc, char** argv){
 	}else if(strncmp(input, "ls", 2)==0){
 		strtok(input, "\n");
 		strcat(input, " ");
-		strcat(input,home);
+		strcat(input,wDirectory);
 		system(input);	
 	}else if(strncmp(input, "rm", 2)==0){
 		char temp[MAX_LENGTH];
