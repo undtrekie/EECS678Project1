@@ -53,8 +53,6 @@ int main(int argc, char** argv){
 
     while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
 		printf("quash:%s > ", wDirectory);
-		//fgets(input, MAX_LENGTH, stdin);
-		//strtok(input, "\n");
       	scanf("%s",input);
 
 	if(strcmp(input, help)==0){
