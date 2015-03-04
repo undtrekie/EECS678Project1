@@ -16,7 +16,8 @@ int main(int argc, char** argv){
     char input[MAX_LENGTH];
     char* home=argv[1];
     char wDirectory[MAX_LENGTH];
-    char* path=argv[2];
+    char path[5][MAX_LENGTH];
+    int numPaths=0;
     char ex[]="exit";
     char quit[]="quit";
     char help[]="help";
@@ -24,15 +25,23 @@ int main(int argc, char** argv){
     char cd[]="cd";
     char jobs[]="jobs";
     int num=0;
-    //Set Working Directory
 
     if(argc!=3){
 		printf("\n%i: Incorrect # of parameters\n\n",argc);
 		printf("usage: ./project <home directory> <path>\n\n");
 		return 1;
     }
+
+    //set Working Directory
     strcpy(wDirectory, home);
-    
+    //set Path
+    if(strstr(argv[2],":")==NULL){
+	strcpy(path[0], argv[2]);
+	numPaths++;
+    }else{
+	
+    }
+    numPaths++;
 
     while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
 		printf("quash:%s > ", wDirectory);
@@ -71,8 +80,10 @@ int main(int argc, char** argv){
 	
 	}else if(strcmp(input, quit)==0){
 		printf("Good-Bye.\n");
+		return 0;
 	}else if(strcmp(input, ex)==0){	
 		printf("Good-Bye.\n");
+		return 0;
 	}else if(strncmp(input, "./", 1)==0){
 		system(input);
 	}else if(strcmp(input, "ls")==0){
