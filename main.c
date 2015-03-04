@@ -52,15 +52,10 @@ int main(int argc, char** argv){
     
 
     while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
-<<<<<<< HEAD
 		printf("quash:%s > ", wDirectory);
 		//fgets(input, MAX_LENGTH, stdin);
 		//strtok(input, "\n");
       	scanf("%s",input);
-=======
-	printf("quash:%s > ", wDirectory);
-      	scanf("%s", input);
->>>>>>> master
 
 	if(strcmp(input, help)==0){
 	    printf("commands:\n");
