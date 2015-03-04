@@ -17,7 +17,8 @@ int main(int argc, char** argv){
     char argus[MAX_LENGTH];
     char* home=argv[1];
     char wDirectory[MAX_LENGTH];
-    char* path=argv[2];
+    char path[5][MAX_LENGTH];
+    int numPaths=0;
     char ex[]="exit";
     char quit[]="quit";
     char help[]="help";
@@ -25,21 +26,41 @@ int main(int argc, char** argv){
     char cd[]="cd";
     char jobs[]="jobs";
     int num=0;
-    //Set Working Directory
-
+    int i;           //loop iterator;
+    char* split;
     if(argc!=3){
 		printf("\n%i: Incorrect # of parameters\n\n",argc);
 		printf("usage: ./project <home directory> <path>\n\n");
 		return 1;
     }
+
+    //set Working Directory
     strcpy(wDirectory, home);
+    //set Path
+    if(strstr(argv[2],":")==NULL){
+	strcpy(path[0], argv[2]);
+	numPaths++;
+    }else{
+	split=strtok(argv[2], ":");
+	while(split != NULL){
+	    strcpy(path[numPaths],split);
+	    numPaths++;
+	    split=strtok(NULL, ":");
+	}
+    }
+    numPaths++;
     
 
     while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
+<<<<<<< HEAD
 		printf("quash:%s > ", wDirectory);
 		//fgets(input, MAX_LENGTH, stdin);
 		//strtok(input, "\n");
       	scanf("%s",input);
+=======
+	printf("quash:%s > ", wDirectory);
+      	scanf("%s", input);
+>>>>>>> master
 
 	if(strcmp(input, help)==0){
 	    printf("commands:\n");
@@ -53,13 +74,30 @@ int main(int argc, char** argv){
 	    printf("\trm\n");
 	    printf("\t./ - for executing programs can be run with or without arguments\n");
 	}else if(strncmp(input, set, 3)==0){
-	    
+	    char buff[MAX_LENGTH];
+	    fgets(buff, 80, stdin);
+	    if(strlen(buff)>1){
+		char* setin;
+		strtok(buff, "\n");
+		setin=strtok(buff, " =");
+		if(strcmp(setin,"HOME")==0){
+		    setin=strtok(NULL,"\n");
+		    strcpy(home, setin);
+		}else if(strcmp(setin,"PATH")==0){
+		    numPaths=0;
+		    setin=strtok(NULL,":");
+		    while(setin !=NULL){
+			strcpy(path[numPaths],setin);
+			numPaths++;
+			setin=strtok(NULL, ":");
+		    }
+		}
+	    }
 	}else if(strncmp(input, cd, 2)==0){
 	    char buff[MAX_LENGTH];
 	    fgets(buff, 80, stdin);
 	    if(strlen(buff)>1){
 		strtok(buff, "\n");
-		int i;
 		for(i=0; i<strlen(buff)-1; i++){
 		    wDirectory[i]=buff[i+1];
 		}
@@ -72,8 +110,10 @@ int main(int argc, char** argv){
 	
 	}else if(strcmp(input, quit)==0){
 		printf("Good-Bye.\n");
+		return 0;
 	}else if(strcmp(input, ex)==0){	
 		printf("Good-Bye.\n");
+		return 0;
 	}else if(strncmp(input, "./", 1)==0){
 		char arg[MAX_LENGTH];
 		fgets(arg,80,stdin);
@@ -98,6 +138,6 @@ int main(int argc, char** argv){
 	}else{
 	    printf("%s: command not found.\n", input);
 	}
-	}
+    }
     return 0;
 }
