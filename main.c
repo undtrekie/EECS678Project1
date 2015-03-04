@@ -53,7 +53,7 @@ int main(int argc, char** argv){
 
     while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
 		printf("quash:%s > ", wDirectory);
-      	scanf("%s",input);
+      	fgets(input,80,stdin);
 
 	if(strcmp(input, help)==0){
 	    printf("commands:\n");
@@ -99,35 +99,40 @@ int main(int argc, char** argv){
 			strcpy(wDirectory, home);
 	    }
 	    system(input);
-	}else if(strcmp(input, jobs)==0){
+	}else if(strncmp(input,jobs,4)==0){
 	
-	}else if(strcmp(input, quit)==0){
+	}else if(strncmp(input,quit,4)==0){
 		printf("Good-Bye.\n");
 		return 0;
-	}else if(strcmp(input, ex)==0){	
+	}else if(strncmp(input,ex,4)==0){	
 		printf("Good-Bye.\n");
 		return 0;
 	}else if(strncmp(input, "./", 1)==0){
-		char arg[MAX_LENGTH];
-		fgets(arg,80,stdin);
-		printf("arg: %s",arg);
 		char temp[MAX_LENGTH];
+		strtok(input, "\n");
 		strcpy(temp,home);
 		strcat(temp,input);
 		printf("command: %s \n",temp);
 		system(temp);
-	}else if(strcmp(input, "ls")==0){
-		strcat(input," ");
+	}else if(strncmp(input, "ls", 2)==0){
+		strtok(input, "\n");
+		strcat(input, " ");
 		strcat(input,home);
 		system(input);	
 	}else if(strncmp(input, "rm", 2)==0){
-		strcat(input, " ");
-		strcat(input,home);
-		char file[MAX_LENGTH];
-		printf("Enter Filename: ");
-		scanf("%s",file);
-		strcat(input,file);
-		system(input);
+		char temp[MAX_LENGTH];
+		char* rm;
+		strtok(input,"\n");
+		rm=strtok(input," ");
+		strcpy(temp,rm);
+		rm=strtok(NULL," ");
+		while(rm != NULL){
+			strcat(temp," ");
+			strcat(temp,home);
+			strcat(temp,rm);
+			rm=strtok(NULL, " ");
+		}
+		system(temp);
 	}else{
 	    printf("%s: command not found.\n", input);
 	}
