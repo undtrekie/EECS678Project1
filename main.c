@@ -133,9 +133,9 @@ int main(int argc, char** argv){
 		strtok(input, "\n");
 		char file[MAX_LENGTH];
 		strcpy(file,input);
-		strcpy(temp,home);
+		strcpy(temp,wDirectory);
 		strcat(temp,input);
-		strcpy(prog,home);
+		strcpy(prog,wDirectory);
 		char* t = strtok(input," ");
 		strcat(prog,t);
 		if(access(prog, X_OK) != -1){
@@ -177,7 +177,7 @@ int main(int argc, char** argv){
 		rm=strtok(NULL," ");
 		while(rm != NULL){
 			strcat(temp," ");
-			strcat(temp,home);
+			strcat(temp,wDirectory);
 			strcat(temp,rm);
 			rm=strtok(NULL, " ");
 		}
@@ -186,7 +186,7 @@ int main(int argc, char** argv){
 		char temp[MAX_LENGTH];
 		strtok(input, "\n");
 		strcat(input, " -C ");
-		strcat(input, home);
+		strcat(input, wDirectory);
 		system(input);
 	}else if(strstr(input,"&")!=NULL){
 	    
@@ -205,14 +205,14 @@ int main(int argc, char** argv){
 			next=strtok(input," ");
 			strcpy(to,next);
 			strcat(to," ");
-			strcat(to,home);
+			strcat(to,wDirectory);
 			strcat(to," ");
 			next=strtok(NULL," ");
 			strcat(to,next);
 			next=strtok(NULL," ");
 			while(next != NULL){
 				strcat(to," ");
-				strcat(to,home);
+				strcat(to,wDirectory);
 				strcat(to,next);
 				next=strtok(NULL," ");
 			}
