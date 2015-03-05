@@ -131,14 +131,24 @@ int main(int argc, char** argv){
 	}else if(strncmp(input, "./", 1)==0){
 		char temp[MAX_LENGTH];
 		char prog[MAX_LENGTH];
-		strtok(input, "\n");
-		char file[MAX_LENGTH];
-		strcpy(file,input);
 		strcpy(temp,wDirectory);
-		strcat(temp,input);
 		strcpy(prog,wDirectory);
-		char* t = strtok(input," ");
+		char* t;
+		int bg = 0;
+		if((strchr(input,'&')) != NULL){
+			t = strtok(input,"& ");
+			bg = 1;
+		}else{
+			t = strtok(input," ");
+		}
+		char* args = strtok(NULL,"\n");
 		strcat(prog,t);
+		strcat(temp,t);
+		strcat(temp," ");
+		strcat(temp,args);
+		if(bg == 1){
+			strcat(temp," > /dev/null &");
+		}
 		if(access(prog, X_OK) != -1){
 			system(temp);
 		}else{
@@ -147,7 +157,12 @@ int main(int argc, char** argv){
 			while(j < 5){
 				char c[MAX_LENGTH];
 				strcpy(c,path[j]);
-				strcat(c,file);
+				strcat(c,t);
+				strcat(c," ");
+				strcat(c,args);
+				if(bg == 1){
+					strcat(c, " > /dev/null &");
+				}
 				strcpy(prog,path[j]);
 				strcat(prog,t);
 				if(access(prog,X_OK) != -1){
