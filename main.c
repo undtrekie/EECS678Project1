@@ -57,7 +57,7 @@ int main(int argc, char** argv){
 
     while(1){
 	printf("quash:%s > ", wDirectory);
-      	fgets(input,80,stdin);
+    fgets(input,80,stdin);
 
 	if(strcmp(input, help)==0){
 	    printf("commands:\n");
@@ -130,11 +130,40 @@ int main(int argc, char** argv){
 		return 0;
 	}else if(strncmp(input, "./", 1)==0){
 		char temp[MAX_LENGTH];
+		char prog[MAX_LENGTH];
 		strtok(input, "\n");
+		char file[MAX_LENGTH];
+		strcpy(file,input);
 		strcpy(temp,home);
 		strcat(temp,input);
-		printf("command: %s \n",temp);
-		system(temp);
+		strcpy(prog,home);
+		char* t = strtok(input," ");
+		strcat(prog,t);
+		if(access(prog, X_OK) != -1){
+			system(temp);
+		}else{
+			int j=0;
+			int k = 0;
+			while(j < 5){
+				char c[MAX_LENGTH];
+				strcpy(c,path[j]);
+				strcat(c,file);
+				strcpy(prog,path[j]);
+				strcat(prog,t);
+				if(access(prog,X_OK) != -1){
+					k=1;
+					printf("c: %s\n", c);
+					system(c);
+					break;
+				}
+				else{
+					j++;
+				}
+			}
+			if(k==0){
+				printf("Executable not in path.\n");
+			}
+		}
 	}else if(strcmp(input, "ls\n")==0){
 		strtok(input, "\n");
 		strcat(input, " ");
