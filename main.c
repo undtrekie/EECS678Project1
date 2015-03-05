@@ -86,10 +86,6 @@ int main(int argc, char** argv){
 		    numPaths++;
 		    setptr=strtok(NULL,":");
 		}
-		//printf("%s", home);
-		/*for(i=0; i<numPaths; i++){
-		    printf("%s\n",path[i]);
-		    }*/
 	    }
 	}else if(strncmp(input, cd, 2)==0){
 	    char* cdtmp;
@@ -104,6 +100,9 @@ int main(int argc, char** argv){
 		strcpy(wcopy, wDirectory);
 		cdtmp2=strrchr(wcopy,'/');
 		strncpy(cdtmp2, "\0",1);
+		cdtmp2=strrchr(wcopy,'/');
+		strncpy(cdtmp2, "\0",1);
+		strcat(wcopy,"/");
 		strcpy(wDirectory,wcopy);
 	    }else{
 		if(strncmp(cdtmp,"/", 1)==0){
@@ -111,11 +110,12 @@ int main(int argc, char** argv){
 		}else{
 		    char cdfull[MAX_LENGTH];
 		    strcpy(cdfull, wDirectory);
-		    strcat(cdfull,"/");
 		    strcat(cdfull,cdtmp);
+		    strcat(cdfull,"/");
 		    strcpy(wDirectory, cdfull);
 		}
 	    }
+	    
 	}else if(strncmp(input,jobs,4)==0){
             printf("[JOBID]\tPID\tCOMMAND\n");
 	    printf("-------\t---\t-------\n");
