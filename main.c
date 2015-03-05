@@ -29,7 +29,7 @@ int main(int argc, char** argv){
     int i;           //loop iterator;
     char* split;
     int jobids=1;
-    int childPIDs[MAX_LENGTH];
+    pid_t childPIDs[MAX_LENGTH];
     char jobCmds[MAX_LENGTH][MAX_LENGTH];
 
     if(argc!=3){
@@ -119,7 +119,7 @@ int main(int argc, char** argv){
 	}else if(strncmp(input,jobs,4)==0){
             printf("[JOBID]\tPID\tCOMMAND\n");
             for(i=0; i<jobids-1; i++){
-                printf("%d\t%d\t%s\n",i+1,childPIDs[i],jobCmds[i]);
+                printf("%d\t%ld\t%s\n",i+1,childPIDs[i],jobCmds[i]);
             }	
 	}else if(strncmp(input,quit,4)==0){
 		printf("Good-Bye.\n");
@@ -159,6 +159,8 @@ int main(int argc, char** argv){
 		strcat(input, " -C ");
 		strcat(input, home);
 		system(input);
+	}else if(strstr(input,"&")!=NULL){
+	    
 	}else{
 		char temp[MAX_LENGTH];
 		strtok(input,"\n");
@@ -189,7 +191,7 @@ int main(int argc, char** argv){
 		}
 		else{
 	    	printf("%s: command not found.\n", input);
-    	}
+		}
 	}
     }
     return 0;
