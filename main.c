@@ -14,7 +14,7 @@
 
 int main(int argc, char** argv){
     char input[MAX_LENGTH];
-    char argus[MAX_LENGTH];
+    char fromFile[MAX_LENGTH];
     char* home=argv[1];
     char wDirectory[MAX_LENGTH];
     char path[5][MAX_LENGTH];
@@ -107,7 +107,6 @@ int main(int argc, char** argv){
 		    strcpy(wDirectory, cdfull);
 		}
 	    }
-	    system(input);
 	}else if(strncmp(input,jobs,4)==0){
 	
 	}else if(strncmp(input,quit,4)==0){
@@ -123,7 +122,7 @@ int main(int argc, char** argv){
 		strcat(temp,input);
 		printf("command: %s \n",temp);
 		system(temp);
-	}else if(strncmp(input, "ls", 2)==0){
+	}else if(strcmp(input, "ls\n")==0){
 		strtok(input, "\n");
 		strcat(input, " ");
 		strcat(input,wDirectory);
@@ -142,8 +141,43 @@ int main(int argc, char** argv){
 			rm=strtok(NULL, " ");
 		}
 		system(temp);
+	}else if(strncmp(input,"make",4)==0){
+		char temp[MAX_LENGTH];
+		strtok(input, "\n");
+		strcat(input, " -C ");
+		strcat(input, home);
+		system(input);
 	}else{
-	    printf("%s: command not found.\n", input);
+		char temp[MAX_LENGTH];
+		strtok(input,"\n");
+		strcpy(temp,input);
+		char* temper;
+		strtok(temp," ");
+		temper=strtok(NULL," ");
+		if(strcmp(temper,"<")==0){
+			printf("From File\n");
+		}else if(strcmp(temper,">")==0){
+			char to[MAX_LENGTH];
+			char* next;
+			next=strtok(input," ");
+			strcpy(to,next);
+			strcat(to," ");
+			strcat(to,home);
+			strcat(to," ");
+			next=strtok(NULL," ");
+			strcat(to,next);
+			next=strtok(NULL," ");
+			while(next != NULL){
+				strcat(to," ");
+				strcat(to,home);
+				strcat(to,next);
+				next=strtok(NULL," ");
+			}
+			system(to);
+		}
+		else{
+	    	printf("%s: command not found.\n", input);
+    	}
 	}
     }
     return 0;
