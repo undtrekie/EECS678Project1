@@ -86,10 +86,10 @@ int main(int argc, char** argv){
 		    numPaths++;
 		    setptr=strtok(NULL,":");
 		}
-		printf("%s", home);
-		for(i=0; i<numPaths; i++){
+		//printf("%s", home);
+		/*for(i=0; i<numPaths; i++){
 		    printf("%s\n",path[i]);
-		}
+		    }*/
 	    }
 	}else if(strncmp(input, cd, 2)==0){
 	    char* cdtmp;
