@@ -28,6 +28,10 @@ int main(int argc, char** argv){
     int num=0;
     int i;           //loop iterator;
     char* split;
+    int jobids=1;
+    int childPIDs[MAX_LENGTH];
+    char jobCmds[MAX_LENGTH][MAX_LENGTH];
+
     if(argc!=3){
 		printf("\n%i: Incorrect # of parameters\n\n",argc);
 		printf("usage: ./project <home directory> <path>\n\n");
@@ -51,7 +55,7 @@ int main(int argc, char** argv){
     numPaths++;
     
 
-    while(strcmp(input, ex)!=0 && strcmp(input, quit)!=0){
+    while(1){
 	printf("quash:%s > ", wDirectory);
       	fgets(input,80,stdin);
 
@@ -95,7 +99,12 @@ int main(int argc, char** argv){
 	    if(cdtmp==NULL){
 		strcpy(wDirectory, home);
 	    }else if(strcmp(cdtmp,"..")==0){
-		
+		char* cdtmp2;
+		char wcopy[MAX_LENGTH];
+		strcpy(wcopy, wDirectory);
+		cdtmp2=strrchr(wcopy,'/');
+		strncpy(cdtmp2, "\0",1);
+		strcpy(wDirectory,wcopy);
 	    }else{
 		if(strncmp(cdtmp,"/", 1)==0){
 		    strcpy(wDirectory, cdtmp);
@@ -108,7 +117,10 @@ int main(int argc, char** argv){
 		}
 	    }
 	}else if(strncmp(input,jobs,4)==0){
-	
+            printf("[JOBID]\tPID\tCOMMAND\n");
+            for(i=0; i<jobids-1; i++){
+                printf("%d\t%d\t%s\n",i+1,childPIDs[i],jobCmds[i]);
+            }	
 	}else if(strncmp(input,quit,4)==0){
 		printf("Good-Bye.\n");
 		return 0;
