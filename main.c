@@ -118,6 +118,7 @@ int main(int argc, char** argv){
 	    }
 	}else if(strncmp(input,jobs,4)==0){
             printf("[JOBID]\tPID\tCOMMAND\n");
+	    printf("-------\t---\t-------\n");
             for(i=0; i<jobids-1; i++){
                 printf("%d\t%ld\t%s\n",i+1,childPIDs[i],jobCmds[i]);
             }	
