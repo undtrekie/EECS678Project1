@@ -117,11 +117,9 @@ int main(int argc, char** argv){
 	    }
 	    
 	}else if(strncmp(input,jobs,4)==0){
-            printf("[JOBID]\tPID\tCOMMAND\n");
+        printf("[JOBID]\tPID\tCOMMAND\n");
 	    printf("-------\t---\t-------\n");
-            for(i=0; i<jobids-1; i++){
-                printf("%d\t%ld\t%s\n",i+1,childPIDs[i],jobCmds[i]);
-            }	
+	    system("ps");
 	}else if(strncmp(input,quit,4)==0){
 		printf("Good-Bye.\n");
 		return 0;
@@ -131,18 +129,26 @@ int main(int argc, char** argv){
 	}else if(strncmp(input, "./", 1)==0){
 		char temp[MAX_LENGTH];
 		char prog[MAX_LENGTH];
+		strtok(input, "\n");
 		strcpy(temp,wDirectory);
 		strcpy(prog,wDirectory);
+		printf("prog: %s\n",prog);
 		char* t;
 		int bg = 0;
+		int exe=0;
 		if((strchr(input,'&')) != NULL){
 			t = strtok(input,"& ");
 			bg = 1;
 		}else{
 			t = strtok(input," ");
 		}
-		char* args = strtok(NULL,"\n");
+		char* args = strtok(NULL,">");
+		char* redir = strtok(NULL," ");
 		strcat(prog,t);
+		printf("prog: %s\n",prog);
+		if(access(prog, X_OK) != -1){
+			exe=1;
+		}
 		strcat(temp,t);
 		strcat(temp," ");
 		if(args != NULL)
@@ -150,9 +156,20 @@ int main(int argc, char** argv){
 			strcat(temp,args);
 		}
 		if(bg == 1){
-			strcat(temp," > /dev/null &");
+			strcat(temp,"> /dev/null & ");
 		}
-		if(access(prog, X_OK) != -1){
+		if(redir != NULL){
+			strcat(temp,"> ");
+			if(strchr(redir,'/')!=NULL){
+				strcat(temp,redir);
+			}
+			else{
+				strcat(temp,wDirectory);
+				strcat(temp,redir);
+			}
+		}
+		printf("temp: %s\n",temp);
+		if(exe==1){
 			system(temp);
 		}else{
 			int j=0;
@@ -167,14 +184,25 @@ int main(int argc, char** argv){
 					strcat(c,args);
 				}
 				if(bg == 1){
-					strcat(c, " > /dev/null &");
+					strcat(c, "> /dev/null & ");
+				}
+				if(redir != NULL){
+					strcat(temp,"> ");
+					if(strchr(redir,'/')!=NULL){
+						strcat(temp,redir);
+					}
+					else{
+						strcat(temp,wDirectory);
+						strcat(temp,redir);
+					}
 				}
 				strcpy(prog,path[j]);
 				strcat(prog,t);
+				printf("prog: %s\n",prog);
 				if(access(prog,X_OK) != -1){
 					k=1;
 					printf("c: %s\n", c);
-					system(c);
+					//system(c);
 					break;
 				}
 				else{
@@ -210,39 +238,40 @@ int main(int argc, char** argv){
 		strcat(input, " -C ");
 		strcat(input, wDirectory);
 		system(input);
-	}else if(strstr(input,"&")!=NULL){
-	    
+	}else if(strchr(input,'>')!=NULL){
+	    strtok(input,"\n");
+	    char temp[MAX_LENGTH];
+	    char* t = strtok(input," ");
+	    strcpy(temp,t);
+	    strcat(temp," ");
+	    t=strtok(NULL," ");
+	    if(strchr(t,'/') != NULL){
+	    	strcat(temp,t);
+	    	strcat(temp," ");
+	    	strcat(temp,strtok(NULL," "));
+	    }
+	    else{
+	    	strcat(temp,wDirectory);
+	    	strcat(temp," ");
+	    	strcat(temp,t);
+	    }
+	    strcat(temp," ");
+	    t=strtok(NULL,"\n");
+	    if(strchr(t,'/')!=NULL){
+	    	strcat(temp,t);
+	    }
+	    else{
+	    	strcat(temp,wDirectory);
+	    	strcat(temp,t);
+	    }
+	    printf("command: %s\n",temp);
+	    system(temp);
+	}else if(strchr(input,'<')!=NULL){
+	
+	}else if(strchr(input,'|')!=NULL){
+	
 	}else{
-		char temp[MAX_LENGTH];
-		strtok(input,"\n");
-		strcpy(temp,input);
-		char* temper;
-		strtok(temp," ");
-		temper=strtok(NULL," ");
-		if(strcmp(temper,"<")==0){
-			printf("From File\n");
-		}else if(strcmp(temper,">")==0){
-			char to[MAX_LENGTH];
-			char* next;
-			next=strtok(input," ");
-			strcpy(to,next);
-			strcat(to," ");
-			strcat(to,wDirectory);
-			strcat(to," ");
-			next=strtok(NULL," ");
-			strcat(to,next);
-			next=strtok(NULL," ");
-			while(next != NULL){
-				strcat(to," ");
-				strcat(to,wDirectory);
-				strcat(to,next);
-				next=strtok(NULL," ");
-			}
-			system(to);
-		}
-		else{
-	    	printf("%s: command not found.\n", input);
-		}
+	    printf("%s: command not found.\n", input);
 	}
     }
     return 0;
