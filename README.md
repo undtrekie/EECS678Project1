@@ -46,9 +46,9 @@ II. Syntax Specification
        -Appending '&' on to any executable allows for background execution
 
     >
-       -Used in conjunction with '&', '>' allows all output of the bacground executing
+       -Used in conjunction with '&', '>' allows all output of the background executing
         program to be redirected to a file. Does not allow the same with programs not
-	runing in the background.
+	running in the background.
 
     |
        -Allows output of one command to be piped as input to the next command.
