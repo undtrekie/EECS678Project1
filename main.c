@@ -12,7 +12,7 @@
 
 #define MAX_LENGTH 80
 
-int main(int argc, char** argv){
+int main(int argc, char** argv, char** envp){
     char input[MAX_LENGTH];
     char fromFile[MAX_LENGTH];
     char* home=argv[1];
@@ -27,6 +27,8 @@ int main(int argc, char** argv){
     char jobs[]="jobs";
     int num=0;
     int i;           //loop iterator;
+    int fileBreak=0;;
+    int ch;
     char* split;
     int jobids=1;
     pid_t childPIDs[MAX_LENGTH];
@@ -54,10 +56,12 @@ int main(int argc, char** argv){
     }
     numPaths++;
     
-
     while(1){
-	printf("quash:%s > ", wDirectory);
-    fgets(input,80,stdin);
+		printf("quash:%s > ", wDirectory);
+		fgets(input,80,stdin);
+		if(strcmp(input,"exit")==0){
+			printf("\n%s\n",input);
+		}
 
 	if(strcmp(input, help)==0){
 	    printf("commands:\n");
@@ -119,7 +123,9 @@ int main(int argc, char** argv){
 	}else if(strncmp(input,jobs,4)==0){
         printf("[JOBID]\tPID\tCOMMAND\n");
 	    printf("-------\t---\t-------\n");
-	    system("jobs -l");
+	    for(i=1; i<=jobids; i++){
+	    	printf("[%s]\t%s\t%s",jobids,childPIDs[(i-1)],jobCmds[(i-1)]);
+	    }
 	}else if(strncmp(input,quit,4)==0){
 		printf("Good-Bye.\n");
 		return 0;
@@ -145,7 +151,10 @@ int main(int argc, char** argv){
 		}
 		char* args = strtok(NULL,">");
 		char* redir = strtok(NULL," ");
-		char* back = strtok(NULL,"\n");
+		char* bckg = strtok(NULL,"\n");
+		args=strtok(args," ");
+		char* fFile=strtok(NULL," ");
+		fFile=strtok(NULL,"\n");
 		strcat(prog,t);
 		if(access(prog, X_OK) != -1){
 			exe=1;
@@ -159,8 +168,18 @@ int main(int argc, char** argv){
 		if(bg == 1){
 			strcat(temp,"> /dev/null & ");
 		}
+		if(fFile != NULL){
+			strcat(temp," < ");
+			if(strchr(fFile,'/')!=NULL){
+				strcat(temp,fFile);
+			}
+			else{
+				strcat(temp,wDirectory);
+				strcat(temp,fFile);
+			}
+		}
 		if(redir != NULL){
-			strcat(temp,"> ");
+			strcat(temp," > ");
 			if(strchr(redir,'/')!=NULL){
 				strcat(temp,redir);
 			}
@@ -169,9 +188,9 @@ int main(int argc, char** argv){
 				strcat(temp,redir);
 			}
 		}
-		if(back != NULL){
+		if(bckg != NULL){
 			strcat(temp," ");
-			strcat(temp,back);
+			strcat(temp,bckg);
 		}
 		if(exe==1){
 			system(temp);
@@ -190,6 +209,16 @@ int main(int argc, char** argv){
 				if(bg == 1){
 					strcat(c, "> /dev/null & ");
 				}
+				if(fFile != NULL){
+					strcat(c," < ");
+					if(strchr(c,'/')!=NULL){
+						strcat(c,fFile);
+					}
+					else{
+						strcat(c,wDirectory);
+						strcat(c,fFile);
+					}
+				}
 				if(redir != NULL){
 					strcat(c,"> ");
 					if(strchr(redir,'/')!=NULL){
@@ -200,9 +229,9 @@ int main(int argc, char** argv){
 						strcat(c,redir);
 					}
 				}
-				if(back != NULL){
+				if(bckg != NULL){
 					strcat(c," ");
-					strcat(c,back);
+					strcat(c,bckg);
 				}
 				strcpy(prog,path[j]);
 				strcat(prog,t);
@@ -273,8 +302,6 @@ int main(int argc, char** argv){
 	    }
 	    printf("command: %s\n",temp);
 	    system(temp);
-	}else if(strchr(input,'<')!=NULL){
-	
 	}else if(strchr(input,'|')!=NULL){
 	
 	}else{
