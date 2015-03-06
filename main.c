@@ -145,7 +145,10 @@ int main(int argc, char** argv){
 		strcat(prog,t);
 		strcat(temp,t);
 		strcat(temp," ");
-		strcat(temp,args);
+		if(args != NULL)
+		{
+			strcat(temp,args);
+		}
 		if(bg == 1){
 			strcat(temp," > /dev/null &");
 		}
@@ -159,7 +162,10 @@ int main(int argc, char** argv){
 				strcpy(c,path[j]);
 				strcat(c,t);
 				strcat(c," ");
-				strcat(c,args);
+				if(args != NULL)
+				{
+					strcat(c,args);
+				}
 				if(bg == 1){
 					strcat(c, " > /dev/null &");
 				}
