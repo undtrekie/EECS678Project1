@@ -132,7 +132,6 @@ int main(int argc, char** argv){
 		strtok(input, "\n");
 		strcpy(temp,wDirectory);
 		strcpy(prog,wDirectory);
-		printf("prog: %s\n",prog);
 		char* t;
 		int bg = 0;
 		int exe=0;
@@ -145,7 +144,6 @@ int main(int argc, char** argv){
 		char* args = strtok(NULL,">");
 		char* redir = strtok(NULL," ");
 		strcat(prog,t);
-		printf("prog: %s\n",prog);
 		if(access(prog, X_OK) != -1){
 			exe=1;
 		}
@@ -168,7 +166,6 @@ int main(int argc, char** argv){
 				strcat(temp,redir);
 			}
 		}
-		printf("temp: %s\n",temp);
 		if(exe==1){
 			system(temp);
 		}else{
@@ -213,6 +210,7 @@ int main(int argc, char** argv){
 				printf("Executable not in path.\n");
 			}
 		}
+		strcpy(input," ");
 	}else if(strcmp(input, "ls\n")==0){
 		strtok(input, "\n");
 		strcat(input, " ");
