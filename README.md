@@ -9,12 +9,21 @@
 *********************************************
 
 I. Introduction
-     Welcome to the quash, quite a shell.  Quash was designed as a programming assignment
+    Welcome to the quash, quite a shell.  Quash was designed as a programming assignment
 for EECS 678: Introduction to Operating Systems at the University of Kansas.  This
 README was intended to be opened upon using the provided Makefile to compile the project.
 
-II. Syntax Specification
-    For all path specification, an ending '/' is required.
+II. Building and launching quash
+    In order to build quash, please type "make" into the command line of a unix based 
+computer.  This README should launch in vi to assist with the syntax of quash.  Please
+see section III for syntax specification.  To launch quash, type:
+    	    "./quash </home directory/> </path directory/>"
+where home directory is the directory that you would like to set as home, and path
+directory is the directory or directories (separated by ':') that you would like to have
+as your path(s).
+
+III. Syntax Specification
+    For all path specification, AN ENDING '/' IS REQUIRED.
     The following commands (and their proper syntax) are included with quash.
 
     cd [PATH]
@@ -45,6 +54,10 @@ II. Syntax Specification
     &
        -Appending '&' on to any executable allows for background execution
 
+    <
+       -Can be used to run a list of commands from a file.  NOTE: the file must have a final
+        command of either exit or quit.
+
     >
        -Used in conjunction with '&', '>' allows all output of the background executing
         program to be redirected to a file. Does not allow the same with programs not
@@ -53,7 +66,10 @@ II. Syntax Specification
     |
        -Allows output of one command to be piped as input to the next command.
 
-III. Conclusion
+    kill [pid]
+       -Allows for termination of ongoing background process. 
+
+IV. Conclusion
      Thank you for trying quash.  As a work in progress, this program is subject to
 revision.  Please contact either Tyler Steiner (tsteiner@ku.edu) or Michael Esry 
 (m716e163@ku.edu) for any questions or comments.
