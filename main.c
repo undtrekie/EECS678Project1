@@ -5,14 +5,19 @@
 *	Purpose: Program Main for Quite a Shell (quash) Project.
 */
 #include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <errno.h>
 #include <sys/wait.h>
 
 #define MAX_LENGTH 80
 
 int main(int argc, char** argv, char** envp){
+	char cwd[MAX_LENGTH];
+	getcwd(cwd, sizeof(cwd));
     char input[MAX_LENGTH];
     char fromFile[MAX_LENGTH];
     char* home=argv[1];
@@ -303,7 +308,64 @@ int main(int argc, char** argv, char** envp){
 	    printf("command: %s\n",temp);
 	    system(temp);
 	}else if(strchr(input,'|')!=NULL){
-	
+		chdir(wDirectory);
+		strtok(input,"\n");
+		char* temp1 = strtok(input,"|");
+		char* temp2 = strtok(NULL,"\n");
+		int pipe1[2];
+		pipe(pipe1);
+		int status;
+		pid_t pid_1;
+		pid_t pid_2;
+		
+		pid_1 = fork();
+		if(pid_1 == 0){
+			char pbuf[256];
+			bzero(pbuf,256);
+			sprintf(pbuf,"%s",temp1);
+			
+			close(pipe1[0]);
+			dup2(pipe1[1],1);
+			
+			if((execl("/bin/bash", "/bin/bash", "-c", pbuf, (char *) 0)) < 0){
+				fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+				return EXIT_FAILURE;
+			}
+			
+			close(pipe1[1]);
+			exit(0);
+		}
+		
+		pid_2 = fork();
+		if(pid_2 == 0){
+			char pbuf[256];
+			bzero(pbuf,256);
+			sprintf(pbuf,"%s",temp2);
+			
+			close(pipe1[1]);
+			dup2(pipe1[0],0);
+			
+			if((execl("/bin/bash", "/bin/bash", "-c", pbuf, (char *) 0)) < 0){
+				fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+				return EXIT_FAILURE;
+			}
+			
+			close(pipe1[0]);
+			exit(0);
+		}
+		
+		close(pipe1[0]);
+		close(pipe1[1]);
+		
+		if ((waitpid(pid_1, &status, 0)) == -1) {
+			fprintf(stderr, "Process 1 encountered an error. ERROR%d", errno);
+			return EXIT_FAILURE;
+		}
+		if ((waitpid(pid_2, &status, 0)) == -1) {
+			fprintf(stderr, "Process 2 encountered an error. ERROR%d", errno);
+			return EXIT_FAILURE;
+		}
+		chdir(cwd);
 	}else{
 	    printf("%s: command not found.\n", input);
 	}
