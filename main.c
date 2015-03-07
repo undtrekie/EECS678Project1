@@ -35,7 +35,7 @@ int main(int argc, char** argv, char** envp){
     int fileBreak=0;;
     int ch;
     char* split;
-    int jobids=1;
+    int jobids=0;
     pid_t childPIDs[MAX_LENGTH];
     char jobCmds[MAX_LENGTH][MAX_LENGTH];
 
@@ -129,7 +129,7 @@ int main(int argc, char** argv, char** envp){
         printf("[JOBID]\tPID\tCOMMAND\n");
 	    printf("-------\t---\t-------\n");
 	    for(i=1; i<=jobids; i++){
-	    	printf("[%s]\t%s\t%s",jobids,childPIDs[(i-1)],jobCmds[(i-1)]);
+	    	printf("[%d]\t%d\t%s\n",jobids,(childPIDs[(i-1)]+1),jobCmds[(i-1)]);
 	    }
 	}else if(strncmp(input,quit,4)==0){
 		printf("Good-Bye.\n");
@@ -147,11 +147,14 @@ int main(int argc, char** argv, char** envp){
 		strcpy(prog,wDirectory);
 		char* t=strtok(alt," ");
 		int bg = 0;
+		int bgd = 0;
 		int exe=0;
 		if((strchr(t,'&')) != NULL){
+			strcpy(alt,input);
 			t = strtok(input,"& ");
 			bg = 1;
 		}else{
+			strcpy(alt,input);
 			t = strtok(input," ");
 		}
 		char* args = strtok(NULL,">");
@@ -172,6 +175,7 @@ int main(int argc, char** argv, char** envp){
 		}
 		if(bg == 1){
 			strcat(temp,"> /dev/null & ");
+			bgd=1;
 		}
 		if(fFile != NULL){
 			strcat(temp," < ");
@@ -196,10 +200,39 @@ int main(int argc, char** argv, char** envp){
 		if(bckg != NULL){
 			strcat(temp," ");
 			strcat(temp,bckg);
+			bgd=1;
 		}
 		if(exe==1){
-			system(temp);
+			if(bgd==1){
+				jobids++;
+				int status;
+				strcpy(jobCmds[(jobids-1)],alt);
+				childPIDs[(jobids-1)] = fork();
+				if(childPIDs[(jobids-1)] > 0){
+					printf("[%d] %d Started\n",jobids,(childPIDs[(jobids-1)]+1));
+				}
+				if(childPIDs[(jobids-1)] == 0){
+					if((execl("/bin/bash", "/bin/bash", "-c", temp, (char *) 0)) < 0){
+						fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+						return EXIT_FAILURE;
+					}
+					exit(0);
+					printf("[%d] %d Done\n",jobids,(childPIDs[(jobids-1)]+1));
+				}
+				
+				if ((waitpid(childPIDs[(jobids-1)], &status, 0)) == -1) {
+					fprintf(stderr, "Process %d encountered an error. ERROR%d\n", jobids, errno);
+					return EXIT_FAILURE;
+				}
+				else{	
+					printf("[%d] %d finished %s\n",jobids,(childPIDs[(jobids-1)]+1),jobCmds[(jobids-1)]);
+				}
+			}
+			else{
+				system(temp);
+			}
 		}else{
+			bgd = 0;
 			int j=0;
 			int k = 0;
 			while(j < 5){
@@ -213,6 +246,7 @@ int main(int argc, char** argv, char** envp){
 				}
 				if(bg == 1){
 					strcat(c, "> /dev/null & ");
+					bgd=1;
 				}
 				if(fFile != NULL){
 					strcat(c," < ");
@@ -237,12 +271,39 @@ int main(int argc, char** argv, char** envp){
 				if(bckg != NULL){
 					strcat(c," ");
 					strcat(c,bckg);
+					bgd=1;
 				}
 				strcpy(prog,path[j]);
 				strcat(prog,t);
 				if(access(prog,X_OK) != -1){
 					k=1;
-					system(c);
+					if(bgd==1){
+						jobids++;
+						int status;
+						strcpy(jobCmds[(jobids-1)],alt);
+						childPIDs[(jobids-1)] = fork();
+						if(childPIDs[(jobids-1)] > 0){
+							printf("[%d] %d Started\n",jobids,(childPIDs[(jobids-1)]+1));
+						}
+						if(childPIDs[(jobids-1)] == 0){
+							if((execl("/bin/bash", "/bin/bash", c, (char *) 0)) < 0){
+								fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+								return EXIT_FAILURE;
+							}
+							exit(0);
+						}
+				
+						if ((waitpid(childPIDs[(jobids-1)], &status, 0)) == -1) {
+							fprintf(stderr, "Process %d encountered an error. ERROR%d\n", jobids, errno);
+							return EXIT_FAILURE;
+						}
+						else{
+							printf("[%d] %d finished %s\n",jobids,(childPIDs[(jobids-1)]+1),jobCmds[(jobids-1)]);
+						}
+					}
+					else{
+						system(c);
+					}
 					break;
 				}
 				else{
@@ -366,7 +427,17 @@ int main(int argc, char** argv, char** envp){
 			return EXIT_FAILURE;
 		}
 		chdir(cwd);
+	}else if(strncmp(input,"kill",4)==0){
+		strtok(input,"\n");
+		char temp[MAX_LENGTH];
+		char* t = strtok(input," ");
+		strcpy(temp,t);
+		strcat(temp," ");
+		t=strtok(NULL," ");
+		strcat(temp,t);
+		system(temp);
 	}else{
+		strtok(input,"\n");
 	    printf("%s: command not found.\n", input);
 	}
     }
