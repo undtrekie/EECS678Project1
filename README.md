@@ -64,7 +64,8 @@ III. Syntax Specification
 	running in the background.
 
     |
-       -Allows output of one command to be piped as input to the next command.
+       -Allows output of one command to be piped as input to the next command.  Up to 4
+        pipes can be used.
 
     kill [pid]
        -Allows for termination of ongoing background process. 
