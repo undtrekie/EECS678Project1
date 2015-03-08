@@ -212,12 +212,11 @@ int main(int argc, char** argv, char** envp){
 					printf("[%d] %d Started\n",jobids,(childPIDs[(jobids-1)]+1));
 				}
 				if(childPIDs[(jobids-1)] == 0){
-					if((execl("/bin/bash", "/bin/bash", "-c", temp, (char *) 0)) < 0){
+					if((execlp("/bin/bash", "/bin/bash", "-c", temp, (char *) 0)) < 0){
 						fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
 						return EXIT_FAILURE;
 					}
 					exit(0);
-					printf("[%d] %d Done\n",jobids,(childPIDs[(jobids-1)]+1));
 				}
 				
 				if ((waitpid(childPIDs[(jobids-1)], &status, 0)) == -1) {
@@ -372,12 +371,27 @@ int main(int argc, char** argv, char** envp){
 		chdir(wDirectory);
 		strtok(input,"\n");
 		char* temp1 = strtok(input,"|");
-		char* temp2 = strtok(NULL,"\n");
+		char* temp2 = strtok(NULL,"|");
+		char* temp3 = strtok(NULL,"|");
+		char* temp4 = strtok(NULL,"|");
 		int pipe1[2];
+		int pipe2[2];
+		int pipe3[2];
 		pipe(pipe1);
+		
+		if(temp3 != NULL){
+			pipe(pipe2);
+		}
+		
+		if(temp4 != NULL){
+			pipe(pipe3);
+		}
+		
 		int status;
 		pid_t pid_1;
 		pid_t pid_2;
+		pid_t pid_3;
+		pid_t pid_4;
 		
 		pid_1 = fork();
 		if(pid_1 == 0){
@@ -386,6 +400,16 @@ int main(int argc, char** argv, char** envp){
 			sprintf(pbuf,"%s",temp1);
 			
 			close(pipe1[0]);
+			
+			if(temp3 != NULL){
+				close(pipe2[0]);
+				close(pipe2[1]);
+			}
+			if(temp4 != NULL){
+				close(pipe3[0]);
+				close(pipe3[1]);
+			}
+			
 			dup2(pipe1[1],1);
 			
 			if((execl("/bin/bash", "/bin/bash", "-c", pbuf, (char *) 0)) < 0){
@@ -405,18 +429,90 @@ int main(int argc, char** argv, char** envp){
 			
 			close(pipe1[1]);
 			dup2(pipe1[0],0);
+			if(temp3 != NULL){
+				close(pipe2[0]);
+				dup2(pipe2[1],1);
+			}
+			if(temp4 != NULL){
+				close(pipe3[0]);
+				close(pipe3[1]);
+			}
+			
 			
 			if((execl("/bin/bash", "/bin/bash", "-c", pbuf, (char *) 0)) < 0){
 				fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
 				return EXIT_FAILURE;
 			}
 			
+			if(temp3 != NULL){
+				close(pipe2[1]);
+			}
 			close(pipe1[0]);
 			exit(0);
 		}
 		
+		if(temp3 != NULL){
+			pid_3 = fork();
+			if(pid_3 == 0){
+				char pbuf[256];
+				bzero(pbuf,256);
+				sprintf(pbuf,"%s",temp3);
+				
+				close(pipe1[1]);
+				close(pipe1[0]);
+				close(pipe2[1]);
+				dup2(pipe2[0],0);
+				if(temp4 != NULL){
+					close(pipe3[0]);
+					dup2(pipe3[1],1);
+				}
+			
+				if((execl("/bin/bash", "/bin/bash", "-c", pbuf, (char *) 0)) < 0){
+					fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+					return EXIT_FAILURE;
+				}
+			
+				close(pipe2[0]);
+				if(temp4 != NULL){
+					close(pipe3[1]);
+				}
+				exit(0);
+			}
+		}
+		
+		if(temp4 != NULL){
+			pid_4 = fork();
+			if(pid_4 == 0){
+				char pbuf[256];
+				bzero(pbuf,256);
+				sprintf(pbuf,"%s",temp4);
+				
+				close(pipe1[1]);
+				close(pipe1[0]);
+				close(pipe2[1]);
+				close(pipe2[0]);
+				close(pipe3[1]);
+				dup2(pipe3[0],0);
+			
+				if((execl("/bin/bash", "/bin/bash", "-c", pbuf, (char *) 0)) < 0){
+					fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+					return EXIT_FAILURE;
+				}
+				close(pipe3[0]);
+				exit(0);
+			}
+		}
+		
 		close(pipe1[0]);
 		close(pipe1[1]);
+		if(temp3 != NULL){
+			close(pipe2[0]);
+			close(pipe2[1]);
+		}
+		if(temp4 != NULL){
+			close(pipe3[0]);
+			close(pipe3[1]);
+		}
 		
 		if ((waitpid(pid_1, &status, 0)) == -1) {
 			fprintf(stderr, "Process 1 encountered an error. ERROR%d", errno);
@@ -426,6 +522,18 @@ int main(int argc, char** argv, char** envp){
 			fprintf(stderr, "Process 2 encountered an error. ERROR%d", errno);
 			return EXIT_FAILURE;
 		}
+		if(temp3 != NULL){
+			if ((waitpid(pid_3, &status, 0)) == -1) {
+				fprintf(stderr, "Process 3 encountered an error. ERROR%d", errno);
+				return EXIT_FAILURE;
+			}
+		}
+		if(temp4 != NULL){
+			if ((waitpid(pid_4, &status, 0)) == -1) {
+				fprintf(stderr, "Process 4 encountered an error. ERROR%d", errno);
+				return EXIT_FAILURE;
+			}
+		}	
 		chdir(cwd);
 	}else if(strncmp(input,"kill",4)==0){
 		strtok(input,"\n");
